@@ -1,0 +1,25 @@
+#!/bin/bash
+
+if [[ $# > 1 ]]; then
+	echo "Usage: $0 filename"
+fi
+
+if [[ ! -f $1 ]]; then
+	echo "file not found"
+	exit -1
+fi
+
+if [[ -f "/var/www/html/share/$1" ]]; then
+	rm "/var/www/html/share/$1"
+fi
+
+if [[ $# == 2 && $2 == '-m' ]]; then
+	mv $1 /var/www/html/share/
+else
+	cp $1 /var/www/html/share/
+fi
+
+chmod 777 /var/www/html/share/$1
+ip_address=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
+echo "wget http://${ip_address}/share/$1"
+
